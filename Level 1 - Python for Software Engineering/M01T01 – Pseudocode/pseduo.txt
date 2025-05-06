@@ -1,0 +1,77 @@
+# HyperionDev_L1-M01T01
+# pseudo.txt
+
+###############################################################################
+### First practical task
+
+initialize current_value to -1
+initialize max_value to 0
+while current_value is not 0
+	ask user for positive integer and store in current_value
+	if current_value is greater than max_value
+		reset max_value to current_value
+print a sentence expressing the max_value
+
+###############################################################################
+### Second practical task
+
+request the user's name, store it in first_name
+print out the concatenation of first_name and "Hello, World" 
+
+###############################################################################
+### Third practical task
+
+initialize sum to 0
+initialize counter
+initialize current_value to 0
+
+ask the user for the first integer
+set the current value to the first integer
+
+while current_value is not empty
+	add current_value to sum
+	increment the counter by 1
+	ask user for next integer, reset the current_value
+compute average = sum/counter
+print out the average
+
+###############################################################################
+### Fourth practical task
+
+initialize an empty list called grocery_list
+initialize an second empty list called alphabetized_groceries
+ask the user for the first item, set it to item
+
+while item is not empty
+	append item to grocery_list
+
+If we have access to an alphabetization routine such as Python's list.sort():
+	Use it on grocery_list and save the result as alphabetized_groceries
+	(EJS Note: I used w3schools.python/ref_list.sort.asp to remember the 
+	subroutine name.)
+else:
+	Create a recursive subroutine to first check the first letters, but will
+	check the next letter(s) if there is a tie. 
+			(EJS Note: I would review recursion and look for examples
+			online to mimic. Since Python can do this natively, I do not
+			usually program alphabetization routines myself.)
+	Store the final list in alphabetized_groceries
+
+print the alphabetized_groceries list, one element at a time
+
+###############################################################################
+### Fifth practical task
+
+open target file for read and write
+	(EJS Note: it's not clear if we're reading and writing to the same file
+	so I have assumed that we are. One could also imagine asking a user for 2 
+	input values too, but the phrasing 'read' and 'write' hints otherwise.)
+read target file and extract desired first value, store in input_x
+read target file and extract desired second value, store in input_y
+
+compute the sum of input_x and input_y, store in S
+compute the quotient of sum divided by 2, store result in A
+compute the product of input_x times input_y and store in P
+
+write S, A, and P in desired format to the target file
+close the target file
