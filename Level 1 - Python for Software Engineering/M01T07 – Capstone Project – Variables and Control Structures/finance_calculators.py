@@ -15,21 +15,11 @@ print('''The available financial calculations are defined below.
 calculation_option = input("Please enter either 'investment' or 'bond' from "\
                            + "the menu above to proceed: ").lower()
 
-# Normally I would encode a while loop or try-except or exit code to handle
-# bad user entries so that the user could try again. However, we have not 
-# coveredthose yet, so the *entire* script must be in the if-else structure 
-# such that the entire program can execute and "finish."
-# It is not clear to me if I'm allowed to use "future knowledge" at this 
-# point or if that is bad form. Given that this is a portfolio entry, 
-# what is the correct protocol? "Correct code" or "Only use what you have 
-# been taught so far?" Please advise! (And I will remove this HUGE text 
-# block, this is unsightly and DEFINITELY NOT PEP8 appropriate!) -EJS
-
 if (calculation_option == "investment"):
     if (calculation_option == "investment"):
         # Ask the user for relevant investment details.
         # I assume that only valid entries are given!
-        principal = float(input("Enter the initial deposit: "))
+        principle = float(input("Enter the initial deposit: "))
 
         # Convert the interest rate to a decimal value.
         rate = float(input("Enter the interest rate as a percent: "))
@@ -39,13 +29,13 @@ if (calculation_option == "investment"):
         interest_type = input("Will the interest be 'simple' or 'compound'? ").lower()
 
         if (interest_type == "simple"):
-            total_money = principal * (1 + rate*years)
+            total_money = principle * (1 + rate*years)
         else: # compound interest
-            total_money = principal * math.pow((1+rate), years)
+            total_money = principle * math.pow((1+rate), years)
         # Round to appropriate value for money.
         total_money = round(total_money, 2)
 
-        # The the user what they will earn.
+        # Tell the user what they will earn.
         print("You will recieve ${:.2f} in total.".format(total_money))
 
 elif(calculation_option == "bond"):
@@ -58,10 +48,9 @@ elif(calculation_option == "bond"):
 
     months = int(input("How many months will repayment take? "))
 
-    # Compute monthly payment value.
+    # Compute monthly payment value and round appropriately.
     monthly_payment = (rate * initial_value) / \
-        (1 - (1+initial_value)**(-1*months))
-    # Round to appropriate value for money.
+        (1 - (1+rate)**(-1*months))
     monthly_payment = round(monthly_payment, 2)
 
     # Tell the user what they owe.
