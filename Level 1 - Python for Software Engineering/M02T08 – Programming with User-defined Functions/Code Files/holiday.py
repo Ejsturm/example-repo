@@ -1,5 +1,5 @@
-'''This program computes the total cost of a holiday using functions to compute
-the different expenses with user-given inputs. 2025-05-15 EJS'''
+'''This program computes the total cost of a holiday using functions to 
+compute the different expenses with user-given inputs. 2025-05-15 EJS'''
 
 # Destination data. Add more cities and their info as needed.
 city_data = {"chicago": {"airfare": 179.99,
@@ -24,7 +24,8 @@ city_data = {"chicago": {"airfare": 179.99,
 print("Choose a city to travel to: Chicago, Miami, New York, Seattle, Boston")
 city_flight = input("City choice: ").strip().lower()
 while city_flight not in city_data.keys():
-    city_flight = input("Selection not recognized, please try again: ").strip().lower()
+    city_flight = input(
+        "Selection not recognized, please try again: ").strip().lower()
 
 # Obtain other input from user. They do not have to stay in a hotel or rent
 # a car, but they cannot enter negative values for either.
@@ -35,6 +36,7 @@ while num_nights < 0:
 rental_days = -1
 while rental_days < 0:
     rental_days = int(input("How many days will a rental car be needed: "))
+
 
 def hotel_cost(num_nights=0):
     """
@@ -49,6 +51,7 @@ def hotel_cost(num_nights=0):
     """
 
     return city_data[city_flight]["hotel_fee"] * num_nights
+
 
 def plane_cost(city_flight):
     """
@@ -65,6 +68,7 @@ def plane_cost(city_flight):
 
     return city_data[city_flight]["airfare"] * 2
 
+
 def car_rental(rental_days=0):
     """
     Compute the total fee for renting a car.
@@ -77,6 +81,7 @@ def car_rental(rental_days=0):
     float: the total car rental fee in USD"""
 
     return city_data[city_flight]["car_fee"] * rental_days
+
 
 def holiday_cost(city_flight, num_nights=0, rental_days=0):
     """
@@ -102,6 +107,7 @@ def holiday_cost(city_flight, num_nights=0, rental_days=0):
     # Round the final cost to two decimals places.
     return round((plane_fee + hotel_fee + car_fee), 2)
 
+
 # Fix the grammar, capitalize the first letter of the destination.
 city_name = city_flight[0].upper() + city_flight[1:]
 
@@ -110,6 +116,7 @@ print(f"""\nHere is a breakdown of the expenses for your trip to {city_name}:
       \tThe total airfare is\t\t${plane_cost(city_flight):.2f}
       \tThe total hotel fee is\t\t${hotel_cost(num_nights):.2f}
       \tThe total car rental fee is\t${car_rental(rental_days):.2f}
-The total cost of your trip is ${holiday_cost(city_flight, num_nights, rental_days)}.
+The total cost of your trip is ${holiday_cost(
+    city_flight, num_nights, rental_days)}.
 Have a great trip!
       """)
