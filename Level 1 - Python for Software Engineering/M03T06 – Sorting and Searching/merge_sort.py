@@ -6,6 +6,9 @@ a list of strings based on their lengths. 2025-05-31 EJS'''
 def merge_sort(items):
     '''The original merge_sort thing.'''
     # Get the length of the input list
+    # items_length = 0
+    # for i in items:
+    #     items_length += len(items[i])
     items_length = len(items)
 
     # # Create temporary storage for merging
@@ -27,14 +30,14 @@ def merge_sort(items):
                 first_section_end + size_of_subsections, items_length
             )
 
-        # Define the sections to merge
-        sections = (first_section_start, first_section_end), (
-            second_section_start,
-            second_section_end
-        )
+            # Define the sections to merge
+            sections = (first_section_start, first_section_end), (
+                second_section_start,
+                second_section_end
+            )
 
-        # Call the merge function to merge the subsections
-        merge(items, sections, temporary_storage)
+            # Call the merge function to merge the subsections
+            merge(items, sections, temporary_storage)
 
         # Double the size of subsections for the next iterations
         size_of_subsections *= 2
@@ -92,9 +95,9 @@ def merge(items, sections, tempoary_storage):
         items[first_section_start+i] = tempoary_storage[i]
 
 
-# My stuff starts--------------------------------------------------------------
-print("\nBeginning now.\n")
-num_list = [5, 3, 2, 6, 1, 4, 8, 0]
+# EJS stuff starts--just a little test stuff first...
+print("\nBeginning now.")
+num_list = [5, 3, 2, 6, 1, 4, 8, 0, 9, 3, 6]
 sorted_num_list = merge_sort(num_list)
 print(f"\nThe sorted number list: {sorted_num_list}")
 
