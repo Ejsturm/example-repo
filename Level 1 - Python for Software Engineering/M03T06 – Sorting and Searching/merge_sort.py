@@ -1,14 +1,10 @@
 '''Modify the given 'merge-sort' algorithm and modify it to sort
-a list of strings based on their lengths. 2025-05-31 EJS'''
+a list of strings based on their lengths. 2025-06-06 EJS'''
 
 
 # Everything below is from the PDF's merge-sort.-------------------------------
 def merge_sort(items):
     '''The original merge_sort thing.'''
-    # Get the length of the input list
-    # items_length = 0
-    # for i in items:
-    #     items_length += len(items[i])
     items_length = len(items)
 
     # # Create temporary storage for merging
@@ -65,7 +61,8 @@ def merge(items, sections, tempoary_storage):
         # Check if both sections still have elments to compare
         if left_index < first_section_end and right_index < second_section_end:
             # Compare elements from both sections
-            if items[left_index] < items[right_index]:
+            # EJS: The line below has the changes that matter!
+            if len(items[left_index]) < len(items[right_index]):
                 # Place the smaller element into temp storage
                 tempoary_storage[temp_index] = items[left_index]
                 left_index += 1
@@ -96,10 +93,10 @@ def merge(items, sections, tempoary_storage):
 
 
 # EJS stuff starts--just a little test stuff first...
-print("\nBeginning now.")
-num_list = [5, 3, 2, 6, 1, 4, 8, 0, 9, 3, 6]
-sorted_num_list = merge_sort(num_list)
-print(f"\nThe sorted number list: {sorted_num_list}")
+# print("\nBeginning now.")
+# num_list = [5, 3, 2, 6, 1, 4, 8, 0, 9, 3, 6]
+# sorted_num_list = merge_sort(num_list)
+# print(f"\nThe sorted number list: {sorted_num_list}")
 
 my_strings_1 = ['in', 'dog', 'I', 'food', 'socks',
                 'messy', 'coffee', 'potato chips', 'airplane', 'robins']
@@ -109,3 +106,15 @@ my_strings_2 = ['alpha', 'beta', 'inspector', 'farce', 'cup',
 
 my_strings_3 = ['penguin', 'snag', 'lactose', 'Hokkaido', 'yarn',
                 'memejac', 'mega stuff oreo', 'if', 'Chicago', 'chemistry']
+
+print("\nSorting string list 1:")
+sorted_list_1 = merge_sort(my_strings_1)
+print(f"First list sorted: {sorted_list_1}.")
+
+print("\nSorting string list 2:")
+sorted_list_2 = merge_sort(my_strings_2)
+print(f"Second list sorted: {sorted_list_2}.")
+
+print("\nSorting string list 3:")
+sorted_list_3 = merge_sort(my_strings_3)
+print(f"Third list sorted: {sorted_list_3}.")
