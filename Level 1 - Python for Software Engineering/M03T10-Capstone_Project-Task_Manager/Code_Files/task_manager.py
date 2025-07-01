@@ -6,6 +6,7 @@ several subsequent tasks to upgrade the baseline program.
 I will use version control along the way. 2025-06-12 EJS'''
 
 # ===== Importing external modules ===========
+from datetime import date
 
 # Setting up path string to make future code more readable:
 MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
@@ -81,20 +82,44 @@ Selection: '''
             print("The passwords did not match. Returning to main menu.\n")
 
     elif menu == 'a':
-        # TODO: Implement the following functionality
-        '''This code block will allow a user to add a new task to task.txt file
-        - You can use these steps:
-            - Prompt a user for the following: 
-                - the username of the person whom the task is assigned to,
-                - the title of the task,
-                - the description of the task, and 
-                - the due date of the task.
-            - Then, get the current date.
-            - Add the data to the file task.txt
-            - Remember to include 'No' to indicate that the task is not
-              complete.
-        '''
-        pass  # Remove this once you implement the functionality
+        # Add a new task and its requirements to the tasks.txt file.
+        print("Adding a new task.")
+        task_username = input("Username for task assignment: ").strip()
+        # Check to ensure the user exists.
+        if task_username not in valid_login_data:
+            print("That username doesn't exist, please try again.\n")
+            continue
+
+        # Get other task data.
+        task_name = input("Task title: ").strip()
+        description = input("Provide a brief description: ").strip()
+        due_date = input("Provide a due date (DD Mon YYYY): ").strip()
+
+        # Get current date information and reformat it apporpiately.
+        # Used geeksforgeeks.org to find the datetime module.
+        curr_year, curr_month_num, curr_day = str(date.today()).split("-")
+        months = {"01": "Jan",
+                  "02": "Feb",
+                  "03": "Mar",
+                  "04": "Apr",
+                  "05": "May",
+                  "06": "Jun",
+                  "07": "Jul",
+                  "08": "Aug",
+                  "09": "Sep",
+                  "10": "Oct",
+                  "11": "Nov",
+                  "12": "Dec"}
+        current_month = months[curr_month_num]
+        current_date = " ".join([curr_day, current_month, curr_year])
+
+        # Format the new task's string.
+        full_task_string = ", ".join([task_username, task_name, description,
+                                     due_date, current_date, "No"])
+
+        # Add the new task string to the task file. 
+        with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
+            file.write("\n"+full_task_string)
 
     elif menu == 'va':
         # TODO: Implement the following functionality
