@@ -7,17 +7,16 @@ I will use version control along the way. 2025-06-12 EJS'''
 
 # ===== Importing external modules ===========
 
+# Setting up path string to make future code more readable:
+MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
+           "Software Engineering/M03T10-Capstone_Project-Task_Manager/"
+           "Code_Files/")
 
 # ==== Login Section ====
 # Check to make sure user.txt exist in the right place, open it, and
 # store its contents in a dictionary.
 try:
-    with open("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
-              "Software Engineering/M03T10-Capstone_Project-Task_Manager/"
-              "Code_Files/user.txt",
-              'r',
-              encoding="utf-8") as file:
-        
+    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as file:
         valid_login_data = {}
         for line in file:
             new_user, new_pw = line.split(",")
@@ -29,7 +28,6 @@ except FileNotFoundError:
 
 # Check user's name and password for authentication.
 # First check if the username is valid.
-
 while True:
     user_inp = input("Enter user name: ").strip()
     if user_inp in valid_login_data:
@@ -46,34 +44,41 @@ while True:
         # Invalid username entered.
         print("Invalid username entered.")
         continue
-    
 
-
-
+# User is now logged in. Begin main menu option loop.
 while True:
-    # Present the menu to the user and
-    # make sure that the user input is converted to lower case.
-    menu = input(
-        '''Select one of the following options:
-r - register a user
-a - add task
-va - view all tasks
-vm - view my tasks
-e - exit
-: '''
-    ).lower()
+    menu = input('''Select one of the following options:
+    r - register a user
+    a - add task
+    va - view all tasks
+    vm - view my tasks
+    e - exit
+Selection: '''
+                 ).strip().lower()
 
     if menu == 'r':
-        # TODO: Implement the following functionality
-        '''This code block will add a new user to the user.txt file
-        - You can use the following steps:
-            - Request input of a new username
-            - Request input of a new password
-            - Request input of password confirmation.
-            - Check if the new password and confirmed password are the same
-            - If they are the same, add them to the user.txt file,
-              otherwise present a relevant message'''
-        pass  # Remove this once you implement the functionality
+        # Register a new user and their password to user.txt.
+        print("Registering a new user.\n")
+        new_name = input("New user's name: ").strip()
+
+        # Check to see if the entered user name already exists.
+        if new_name in valid_login_data:
+            print("That user name already exists, please try again.\n")
+            continue
+
+        # Check that the password entries match.
+        new_code_1 = input("New password: ").strip()
+        new_code_2 = input("Confirm password: ").strip()
+
+        if new_code_1 == new_code_2:
+            # The passwords match; add new information to both the 
+            # valid_user dictionary and the user.txt file.
+            valid_login_data.update({new_name: new_code_1})
+            with open(MY_PATH+"user.txt", 'a+', encoding="utf-8") as file:
+                file.write("\n"+new_name+","+new_code_1)
+        else:
+            # The passwords do not match. Return to main menu.
+            print("The passwords did not match. Returning to main menu.\n")
 
     elif menu == 'a':
         # TODO: Implement the following functionality
