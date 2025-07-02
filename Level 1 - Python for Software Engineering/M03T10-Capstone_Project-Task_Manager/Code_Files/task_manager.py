@@ -85,12 +85,56 @@ def add_task():
         file.write("\n"+full_task_string)
 
 
+def print_task(line):
+    '''Will print a nicely formatted version for a single task.
+
+    Parameters:
+    line (string): the line of data with all task information
+    '''
+
+    contents = line.split(", ")
+    print(f"{'Task:': <20}{contents[1]}")
+    print(f"{'Assigned to:': <20}{contents[0]}")
+    print(f"{'Date assigned:': <20}{contents[3]}")
+    print(f"{'Due date:': <20}{contents[4]}")
+    print(f"{'Task complete?': <20}{contents[5].strip()}")
+    print(f"Task description:\n {contents[2]}")
+    print("-"*80)
+
+
 def view_all():
-    pass
+    '''Prints all tasks by calling the print_task() subroutine for
+    formatting.'''
+
+    total_tasks = 0
+
+    print("-"*80)
+    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            print_task(line)
+            total_tasks += 1
+    print(f"There are {total_tasks} tasks in total.\n")
 
 
-def view_mine():
-    pass
+def view_mine(user):
+    '''Prints tasks only associated with the current_user. Uses the
+    print_task() subroutine for formatting.
+
+    Parameters:
+    user (string): the current username
+    '''
+
+    total_tasks = 0
+
+    print("-"*80)
+    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            contents = line.split(", ")
+            # Check task's assinged person.
+            if contents[0].strip() == user:
+                total_tasks += 1
+                print_task(line)
+    print(f"The user {user} has {total_tasks} assigned to them.\n")
 
 
 def view_completed():
@@ -107,9 +151,9 @@ def delete_task():
 
 valid_login_data = {}
 try:
-    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as file:
-        for line in file:
-            new_user, new_pw = line.split(",")
+    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as my_file:
+        for my_line in my_file:
+            new_user, new_pw = my_line.split(",")
             new_user = new_user.strip()
             new_pw = new_pw.strip()
             valid_login_data.update({new_user: new_pw})
@@ -178,45 +222,12 @@ while True:
     elif menu == 'va':
         # Format and display ALL current tasks.txt from file contents.
         print("Displaying all current tasks:")
-        print("-"*80)
-        # First open the file and read it.
-        # Used python formatting documentaiton to get it pretty.
-        with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
-            for line in file:
-                contents = line.split(", ")
-                print(f"{'Task:': <20}{contents[1]}")
-                print(f"{'Assigned to:': <20}{contents[0]}")
-                print(f"{'Date assigned:': <20}{contents[3]}")
-                print(f"{'Due date:': <20}{contents[4]}")
-                print(f"{'Task complete?': <20}{contents[5].strip()}")
-                print(f"Task description:\n {contents[2]}")
-                print("-"*80)
+        view_all()
 
     elif menu == 'vm':
         # Format and display current user's tasks from tasks.txt.
-        print(f"Diplsaying all tasks for user: {user_inp}.")
-        print("-"*80)
-        # Open file, read it, check each line's first entry to see if it
-        # matches the current user; if so, format and print the task.
-
-        num_tasks = 0  # Track how many tasks are printed.
-        with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
-            for line in file:
-                contents = line.split(", ")
-                # Check task's assinged person.
-                if contents[0].strip() == user_inp:
-                    num_tasks += 1
-                    print(f"{'Task:': <20}{contents[1]}")
-                    print(f"{'Assigned to:': <20}{contents[0]}")
-                    print(f"{'Date assigned:': <20}{contents[3]}")
-                    print(f"{'Due date:': <20}{contents[4]}")
-                    print(f"{'Task complete?': <20}{contents[5].strip()}")
-                    print(f"Task description:\n {contents[2]}")
-                    print("-"*80)
-
-        # If the current user has no tasks, inform them.
-        if num_tasks == 0:
-            print("The user {user_inp} does not have any tasks.")
+        print(f"Diplsaying all tasks for user: {current_user}.")
+        view_mine(current_user)
 
     elif menu == 'e':
         print('Goodbye!!!')
