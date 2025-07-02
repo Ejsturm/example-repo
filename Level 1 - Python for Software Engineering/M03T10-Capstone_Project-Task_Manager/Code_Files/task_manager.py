@@ -115,23 +115,27 @@ Selection: '''
 
         # Format the new task's string.
         full_task_string = ", ".join([task_username, task_name, description,
-                                     due_date, current_date, "No"])
+                                     current_date, due_date, "No"])
 
         # Add the new task string to the task file. 
         with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
             file.write("\n"+full_task_string)
 
     elif menu == 'va':
-        # TODO: Implement the following functionality
-        '''This code block will read the task from task.txt file and
-         print to the console in the format of Output 2 presented in the PDF
-         You can do it in this way:
-            - Read a line from the file.
-            - Split that line where there is comma and space.
-            - Then print the results in the format shown in the Output 2 in
-              the PDF
-            - It is much easier to read a file using a for loop.'''
-        pass  # Remove this once you implement the functionality
+        # Format and display the current tasks.txt file contents.
+        print("Displaying all current tasks:")
+        print("-"*80)
+        # First open the file and read it. 
+        with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+            for line in file:
+                contents = line.split(", ")
+                print(f"{'Task:': <20}{contents[1]}")
+                print(f"{'Assigned to:': <20}{contents[0]}")
+                print(f"{'Date assigned:': <20}{contents[3]}")
+                print(f"{'Due date:': <20}{contents[4]}")
+                print(f"{'Task complete?': <20}{contents[5].strip()}")
+                print(f"Task description:\n {contents[2]}")
+                print("-"*80)
 
     elif menu == 'vm':
         # TODO: Implement the following functionality
