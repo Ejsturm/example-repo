@@ -158,17 +158,15 @@ def delete_task():
 
     # Two lists to store all task information and just task titles.
     all_tasks = []
-    task_titles = []
 
     with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
         for line in file:
             all_tasks.append(line.strip())
-            contents = line.split(", ")
-            task_titles.append(contents[1].strip())
 
     # Provide the user with numbers for all task names.
     print("Here are all of the present task names:")
-    for i, title in enumerate(task_titles):
+    for i, task in enumerate(all_tasks):
+        title = task.split(", ")[1].strip()
         print(f"{i+1}: {title}")
 
     # Check to make sure the user enters a valid entry.
@@ -178,7 +176,7 @@ def delete_task():
         print("Selection must be a number. Returning to main menu.")
         return
 
-    if (target_task < 1) or (target_task > len(task_titles)+1):
+    if (target_task < 1) or (target_task > len(all_tasks)+1):
         print("An invalid number was given. Returning to main menu.\n")
         return
 
