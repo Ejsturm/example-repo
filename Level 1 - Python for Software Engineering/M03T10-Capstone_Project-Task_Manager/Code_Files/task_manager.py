@@ -1,4 +1,6 @@
-'''A capstone project at the end of 'Level 1.' Using the template given
+'''Update: modifying code to accomplish tasks 2 and 3. 2025-07-02 EJS
+
+A capstone project at the end of 'Level 1.' Using the template given
 as a foundation, modify it to enable users to login with a password,
 choose a desired option from a menu, and execute tasks. There are
 several subsequent tasks to upgrade the baseline program.
@@ -13,12 +15,99 @@ MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
            "Software Engineering/M03T10-Capstone_Project-Task_Manager/"
            "Code_Files/")
 
+# ====== Subroutines ===================================================
+
+
+def reg_user():
+    '''Only for admin use. Adds a new user to the user.txt file after
+    checking to ensure that the user does not already exist.'''
+
+    new_user = input("New user's name: ").strip()
+    if new_user in valid_login_data:
+        print("That user name already exists, please try again.\n")
+        return
+    else:
+        # Check that the password entries match.
+        new_code_1 = input("New password: ").strip()
+        new_code_2 = input("Confirm password: ").strip()
+
+        if new_code_1 == new_code_2:
+            # The passwords match; add new information to both the
+            # valid_user dictionary and the user.txt file.
+            valid_login_data.update({new_user: new_code_1})
+            with open(MY_PATH+"user.txt", 'a+', encoding="utf-8") as file:
+                file.write("\n"+new_user+","+new_code_1)
+        else:
+            # The passwords do not match. Return to main menu.
+            print("The passwords did not match. Returning to main menu.\n")
+    return
+
+
+def add_task():
+    '''Enable any present user to add a task to the tasks.txt file.
+    Prompt user for relevant information.'''
+
+    task_username = input("Username for task assignment: ").strip()
+    # Check to ensure the user exists.
+    if task_username not in valid_login_data:
+        print("That username doesn't exist, please try again.\n")
+        return
+
+    # Get other task data.
+    task_name = input("Task title: ").strip()
+    description = input("Provide a brief description: ").strip()
+    due_date = input("Provide a due date (DD Mon YYYY): ").strip()
+
+    # Get current date information and reformat it apporpiately.
+    # Used geeksforgeeks.org to find the datetime module.
+    curr_year, curr_month_num, curr_day = str(date.today()).split("-")
+    months = {"01": "Jan",
+              "02": "Feb",
+              "03": "Mar",
+              "04": "Apr",
+              "05": "May",
+              "06": "Jun",
+              "07": "Jul",
+              "08": "Aug",
+              "09": "Sep",
+              "10": "Oct",
+              "11": "Nov",
+              "12": "Dec"}
+    current_month = months[curr_month_num]
+    current_date = " ".join([curr_day, current_month, curr_year])
+
+    # Format the new task's string.
+    full_task_string = ", ".join([task_username, task_name, description,
+                                 current_date, due_date, "No"])
+
+    # Add the new task string to the task file.
+    with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
+        file.write("\n"+full_task_string)
+
+
+def view_all():
+    pass
+
+
+def view_mine():
+    pass
+
+
+def view_completed():
+    pass
+
+
+def delete_task():
+    pass
+
 # ==== Login Section ====
 # Check to make sure user.txt exist in the right place, open it, and
 # store its contents in a dictionary.
+
+
+valid_login_data = {}
 try:
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as file:
-        valid_login_data = {}
         for line in file:
             new_user, new_pw = line.split(",")
             new_user = new_user.strip()
@@ -30,11 +119,11 @@ except FileNotFoundError:
 # Check user's name and password for authentication.
 # First check if the username is valid.
 while True:
-    user_inp = input("Enter user name: ").strip()
-    if user_inp in valid_login_data:
+    current_user = input("Enter user name: ").strip()
+    if current_user in valid_login_data:
         # Valid username entered; check for corresponding password.
-        pw_inp = input("Enter password: ").strip()
-        if pw_inp == valid_login_data[user_inp]:
+        current_pw = input("Enter password: ").strip()
+        if current_pw == valid_login_data[current_user]:
             # Correct password
             break
         else:
@@ -48,78 +137,43 @@ while True:
 
 # User is now logged in. Begin main menu option loop.
 while True:
-    menu = input('''Select one of the following options:
-    r - register a user
-    a - add task
-    va - view all tasks
-    vm - view my tasks
-    e - exit
-Selection: '''
-                 ).strip().lower()
+    if current_user == "admin":
+        # Show all options for the admin.
+        menu = input('''Select one of the following options:
+        r - register a user
+        a - add task
+        va - view all tasks
+        vm - view my tasks
+        vc - view completed tasks
+        del - delete a particular task
+        e - exit
+    Selection: '''
+                     ).strip().lower()
+
+    else:
+        # Show only certain options for non-admin.
+        menu = input('''Select one of the following options:
+        a - add task
+        va - view all tasks
+        vm - view my tasks
+        e - exit
+    Selection: '''
+                     ).strip().lower()
 
     if menu == 'r':
         # Register a new user and their password to user.txt.
-        print("Registering a new user.\n")
-        new_name = input("New user's name: ").strip()
-
-        # Check to see if the entered user name already exists.
-        if new_name in valid_login_data:
-            print("That user name already exists, please try again.\n")
-            continue
-
-        # Check that the password entries match.
-        new_code_1 = input("New password: ").strip()
-        new_code_2 = input("Confirm password: ").strip()
-
-        if new_code_1 == new_code_2:
-            # The passwords match; add new information to both the
-            # valid_user dictionary and the user.txt file.
-            valid_login_data.update({new_name: new_code_1})
-            with open(MY_PATH+"user.txt", 'a+', encoding="utf-8") as file:
-                file.write("\n"+new_name+","+new_code_1)
+        # ONLY ADMINS MAY DO THIS.
+        if current_user == "admin":
+            print("Registering a new user.\n")
+            reg_user()   
         else:
-            # The passwords do not match. Return to main menu.
-            print("The passwords did not match. Returning to main menu.\n")
+            print("Only admins may perform this action.\n")
+            continue
 
     elif menu == 'a':
         # Add a new task and its requirements to the tasks.txt file.
         print("Adding a new task.")
-        task_username = input("Username for task assignment: ").strip()
-        # Check to ensure the user exists.
-        if task_username not in valid_login_data:
-            print("That username doesn't exist, please try again.\n")
-            continue
-
-        # Get other task data.
-        task_name = input("Task title: ").strip()
-        description = input("Provide a brief description: ").strip()
-        due_date = input("Provide a due date (DD Mon YYYY): ").strip()
-
-        # Get current date information and reformat it apporpiately.
-        # Used geeksforgeeks.org to find the datetime module.
-        curr_year, curr_month_num, curr_day = str(date.today()).split("-")
-        months = {"01": "Jan",
-                  "02": "Feb",
-                  "03": "Mar",
-                  "04": "Apr",
-                  "05": "May",
-                  "06": "Jun",
-                  "07": "Jul",
-                  "08": "Aug",
-                  "09": "Sep",
-                  "10": "Oct",
-                  "11": "Nov",
-                  "12": "Dec"}
-        current_month = months[curr_month_num]
-        current_date = " ".join([curr_day, current_month, curr_year])
-
-        # Format the new task's string.
-        full_task_string = ", ".join([task_username, task_name, description,
-                                     current_date, due_date, "No"])
-
-        # Add the new task string to the task file.
-        with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
-            file.write("\n"+full_task_string)
+        add_task()
 
     elif menu == 'va':
         # Format and display ALL current tasks.txt from file contents.
