@@ -98,7 +98,7 @@ def print_task(line):
     print(f"{'Date assigned:': <20}{contents[3]}")
     print(f"{'Due date:': <20}{contents[4]}")
     print(f"{'Task complete?': <20}{contents[5].strip()}")
-    print(f"Task description:\n {contents[2]}")
+    print(f"Task description:\n  {contents[2]}")
     print("-"*80)
 
 
@@ -138,25 +138,86 @@ def view_mine(user):
 
 
 def view_completed():
-    pass
+    '''Only for admin use. Shows all tasks that have already been
+    completed. Uses the print_task() subroutine for formatting.'''
+
+    completed_tasks = 0
+    print("-"*80)
+    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            contents = line.split(", ")
+            if contents[5].strip() == "Yes":
+                completed_tasks += 1
+                print_task(line)
+    print(f"There are {completed_tasks} completed tasks.")
 
 
 def delete_task():
-    pass
+    '''Only for admin use. Enables the admin to delete a specified task
+    using the task's title. Confirms before deletion.'''
 
-# ==== Login Section ====
+    # Two lists to store all task information and just task titles.
+    all_tasks = []
+    task_titles = []
+
+    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            all_tasks.append(line.strip())
+            contents = line.split(", ")
+            task_titles.append(contents[1].strip())
+
+    # Provide the user with numbers for all task names.
+    print("Here are all of the present task names:")
+    for i, title in enumerate(task_titles):
+        print(f"{i+1}: {title}")
+
+    # Check to make sure the user enters a valid entry.
+    try:
+        target_task = int(input("Please select a task number for deletion: "))
+    except ValueError:
+        print("Selection must be a number. Returning to main menu.")
+        return
+
+    if (target_task < 1) or (target_task > len(task_titles)+1):
+        print("An invalid number was given. Returning to main menu.\n")
+        return
+
+    # Valid number given; confirm it is the desired task for deletion.
+    print(f"You have selected task {target_task}:")
+    print_task(all_tasks[target_task-1])
+
+    confirm = input("Are you sure you wish to delete this task (y/n)? : "
+                    ).strip().lower()
+
+    if confirm == "y":
+        # Remove the target task and save the modified task list to
+        # tasks.txt. WILL OVERWRITE tasks.txt.
+        all_tasks.pop(target_task-1)
+        with open(MY_PATH+"tasks.txt", "w", encoding="utf-8") as new_file:
+            for j, t in enumerate(all_tasks):
+                if j == len(all_tasks)-1:
+                    new_file.write(t)
+                else:
+                    new_file.write(t+"\n")
+
+    else:
+        # No deletion; keep the tasks.txt the same as before.
+        print("No task deletion. Returning to main menu.\n")
+        return
+
+
+# ==== Login Section ===================================================
 # Check to make sure user.txt exist in the right place, open it, and
 # store its contents in a dictionary.
-
 
 valid_login_data = {}
 try:
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as my_file:
         for my_line in my_file:
-            new_user, new_pw = my_line.split(",")
-            new_user = new_user.strip()
-            new_pw = new_pw.strip()
-            valid_login_data.update({new_user: new_pw})
+            list_user, list_pw = my_line.split(",")
+            list_user = list_user.strip()
+            list_pw = list_pw.strip()
+            valid_login_data.update({list_user: list_pw})
 except FileNotFoundError:
     print("user.txt does not exist; please check the path and try again.")
 
@@ -209,7 +270,7 @@ while True:
         # ONLY ADMINS MAY DO THIS.
         if current_user == "admin":
             print("Registering a new user.\n")
-            reg_user()   
+            reg_user()
         else:
             print("Only admins may perform this action.\n")
             continue
@@ -228,6 +289,25 @@ while True:
         # Format and display current user's tasks from tasks.txt.
         print(f"Diplsaying all tasks for user: {current_user}.")
         view_mine(current_user)
+
+    elif menu == 'vc':
+        # Allow user to view completed tasks.
+        # ONLY ADMINS MAY DO THIS.
+        if current_user == "admin":
+            print("Viewing completed tasks.\n")
+            view_completed()
+        else:
+            print("Only admins may perform this action.\n")
+            continue
+    
+    elif menu == 'del':
+        # Allow user to delete a specified task.
+        # ONLY ADMINS MAY DO THIS.
+        if current_user == "admin":
+            print("Deleting a task.\n")
+            delete_task()
+        else:
+            print("Only admins may perform this action.\n")
 
     elif menu == 'e':
         print('Goodbye!!!')
