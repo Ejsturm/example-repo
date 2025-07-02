@@ -72,7 +72,7 @@ Selection: '''
         new_code_2 = input("Confirm password: ").strip()
 
         if new_code_1 == new_code_2:
-            # The passwords match; add new information to both the 
+            # The passwords match; add new information to both the
             # valid_user dictionary and the user.txt file.
             valid_login_data.update({new_name: new_code_1})
             with open(MY_PATH+"user.txt", 'a+', encoding="utf-8") as file:
@@ -117,15 +117,16 @@ Selection: '''
         full_task_string = ", ".join([task_username, task_name, description,
                                      current_date, due_date, "No"])
 
-        # Add the new task string to the task file. 
+        # Add the new task string to the task file.
         with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
             file.write("\n"+full_task_string)
 
     elif menu == 'va':
-        # Format and display the current tasks.txt file contents.
+        # Format and display ALL current tasks.txt from file contents.
         print("Displaying all current tasks:")
         print("-"*80)
-        # First open the file and read it. 
+        # First open the file and read it.
+        # Used python formatting documentaiton to get it pretty.
         with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
             for line in file:
                 contents = line.split(", ")
@@ -138,17 +139,30 @@ Selection: '''
                 print("-"*80)
 
     elif menu == 'vm':
-        # TODO: Implement the following functionality
-        '''This code block will read the task from task.txt file and
-         print to the console in the format of Output 2 presented in the PDF
-         You can do it in this way:
-            - Read a line from the file
-            - Split the line where there is comma and space.
-            - Check if the username of the person logged in is the same as the 
-              username you have read from the file.
-            - If they are the same you print the task in the format of Output 2
-              shown in the PDF '''
-        pass  # Remove this once you implement the functionality
+        # Format and display current user's tasks from tasks.txt.
+        print(f"Diplsaying all tasks for user: {user_inp}.")
+        print("-"*80)
+        # Open file, read it, check each line's first entry to see if it
+        # matches the current user; if so, format and print the task.
+
+        num_tasks = 0  # Track how many tasks are printed.
+        with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+            for line in file:
+                contents = line.split(", ")
+                # Check task's assinged person.
+                if contents[0].strip() == user_inp:
+                    num_tasks += 1
+                    print(f"{'Task:': <20}{contents[1]}")
+                    print(f"{'Assigned to:': <20}{contents[0]}")
+                    print(f"{'Date assigned:': <20}{contents[3]}")
+                    print(f"{'Due date:': <20}{contents[4]}")
+                    print(f"{'Task complete?': <20}{contents[5].strip()}")
+                    print(f"Task description:\n {contents[2]}")
+                    print("-"*80)
+
+        # If the current user has no tasks, inform them.
+        if num_tasks == 0:
+            print("The user {user_inp} does not have any tasks.")
 
     elif menu == 'e':
         print('Goodbye!!!')
