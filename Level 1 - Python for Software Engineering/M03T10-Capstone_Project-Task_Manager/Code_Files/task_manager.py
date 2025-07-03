@@ -142,6 +142,18 @@ def view_mine(user):
             print_task(task)
     print(f"The user {user} has {user_tasks} tasks assigned to them.\n")
 
+    # Task updates can only be executed by 'view_mine()' and thus,
+    # the admin would not see the other tasks not assigned to them.
+    # However, as an admin, it is my decision to give them the
+    # ability to update any task for any user so let them see those too.
+    if user == "admin":
+        print("********** Non-admin tasks **********")
+        for i, task in enumerate(all_tasks):
+            if task.split(", ")[0].strip() != "admin":
+                print(f"{'Task number:': <20}{i+1}")
+                print_task(task)
+        print(f"\nThere are {user_tasks} admin tasks and {i} total tasks.\n")
+
     # If the task is not complete, offer the option to 'complete' or
     # edit it. (Task 3's requirement.)
     print("To update a task, enter the task number.")
@@ -157,8 +169,23 @@ def view_mine(user):
     if task_no == -1:
         print("Returning to main menu.\n")
     else:
+        # If the task number is an illegal index, return to main menu.
         if (task_no < 1) or (task_no > len(all_tasks)):
             print("An invalid number was given. Returning to main menu.\n")
+            return
+
+        # If the user tries to modify a task that isn't assigned to
+        # them, forbid the modification and return to main menu.
+        # ADMINS MAY ALWAYS MODIFY ALL TASKS!!!
+
+        # EJS: A professional software engineer tested my code and
+        # suggested this functionality. I agreed it was smart and I
+        # implemented it without further input.
+        task_user = all_tasks[task_no-1]
+        task_user = task_user.split(", ")[0].strip()
+        if (user != "admin") and (task_user != user):
+            print("You may not modify a task not assigned to you.")
+            print("Returning to main menu.\n")
             return
 
         # Only incomplete tasks may be updated, so check it.
@@ -203,6 +230,8 @@ def update_task(tasks, target):
             temp_task[5] = "Yes"
             # Once a task is complete, no further edits are permitted.
             # Therefore, break out of the menu while loop.
+            print(f"Task {temp_task[1]} is now marked complete.")
+            print("Returning to main menu.\n")
             break
         elif option == 'u':
             new_name = input("Who should be assinged to this task: ").strip()
@@ -297,7 +326,7 @@ def delete_task():
         return
 
 
-def generate_repots():
+def generate_reports():
     pass
 
 
@@ -367,14 +396,11 @@ while True:
                      ).strip().lower()
 
     if menu == 'r':
-        # Register a new user and their password to user.txt.
         # ONLY ADMINS MAY DO THIS.
+        # Register a new user and their password to user.txt.
         if current_user == "admin":
             print("Registering a new user.\n")
             reg_user()
-        else:
-            print("Only admins may perform this action.\n")
-            continue
 
     elif menu == 'a':
         # Add a new task and its requirements to the tasks.txt file.
@@ -392,36 +418,29 @@ while True:
         view_mine(current_user)
 
     elif menu == 'vc':
-        # Allow user to view completed tasks.
         # ONLY ADMINS MAY DO THIS.
+        # Allow user to view completed tasks.
         if current_user == "admin":
             print("Viewing completed tasks.\n")
             view_completed()
-        else:
-            print("Only admins may perform this action.\n")
-            continue
 
     elif menu == 'del':
-        # Allow user to delete a specified task.
         # ONLY ADMINS MAY DO THIS.
+        # Allow user to delete a specified task.
         if current_user == "admin":
             print("Deleting a task.\n")
             delete_task()
-        else:
-            print("Only admins may perform this action.\n")
 
     elif menu == 'ds':
-        # Allow user to
         # ONLY ADMINS MAY DO THIS.
+        # Diplay the information stored in the report files.
         display_statistics()
 
     elif menu == 'gr':
-        # Allow user to generate two report text files.
         # ONLY ADMINS MAY DO THIS.
+        # Allow user to generate two report text files.
         if current_user == "admin":
             generate_reports()
-        else:
-            print("Only admins may perform this action.\n")
 
     elif menu == 'e':
         print('Goodbye!!!')
