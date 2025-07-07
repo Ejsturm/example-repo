@@ -8,12 +8,16 @@ several subsequent tasks to upgrade the baseline program.
 I will use version control along the way. 2025-06-12 EJS'''
 
 # ===== Importing external modules ===========
+from datetime import datetime as dt
 from datetime import date
 
 # Setting up path string to make future code more readable:
 MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
            "Software Engineering/M03T10-Capstone_Project-Task_Manager/"
            "Code_Files/")
+
+# Used for reading in and printing out dates in the desired format.
+DATE_STR_FORMAT = "%d %b %Y"
 
 # ====== Subroutines ===================================================
 
@@ -326,11 +330,92 @@ def delete_task():
         return
 
 
+def generate_task_report():
+    '''Creates a dictionary of stats about the tasks using the tasks.txt
+    file.
+
+    Returns
+    A dictionary with various data about task completion.'''
+
+    all_tasks = []  # Holds all tasks.txt data.
+    task_data = {}  # Will hold all task statistics computed below.
+
+    total_tasks = 0
+    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as task_file:
+        for line in task_file:
+            all_tasks.append(line.strip())
+            total_tasks += 1
+
+    # If the tasks.txt file is empty, notify the user.
+    if total_tasks == 0:
+        print('''No tasks exist; unable to generate statistics.
+              Please add tasks before generating metadata.
+              Returning to main menu.\n''')
+        return task_data
+
+    completed_tasks = 0
+    incomplete_tasks = 0
+    overdue_tasks = 0
+    for t in all_tasks:
+        task_components = t.split(", ")
+        completion = task_components[5].strip()
+        if completion == "Yes":
+            completed_tasks += 1
+        else:
+            incomplete_tasks += 1
+            # Determine the Unix time of the due date.
+            # EJS: A pro software engineer taught me about the universal
+            # unix timestamp concept.
+            due_date = task_components[4]
+            due_date_parse = dt.strptime(due_date, DATE_STR_FORMAT)
+            curr_parse = dt.now()  # The current Unix time
+
+            # Compare the Unix timestamps to see if the task is overdue.
+            if due_date_parse < curr_parse:
+                overdue_tasks += 1
+
+    percent_incomplete = round(incomplete_tasks/total_tasks * 100, 2)
+    percent_overdue = round(overdue_tasks/total_tasks * 100, 2)
+
+    task_data.update({'Total tasks': total_tasks,
+                      'Completed tasks': completed_tasks,
+                      'Incomplete tasks': incomplete_tasks,
+                      'Overdue tasks': overdue_tasks,
+                      'Percent incomplete': percent_incomplete,
+                      'Percent overdue': percent_overdue
+                      })
+
+    return task_data
+
+
+def generate_user_report():
+    '''foo'''
+
+    all_user_info = []
+
+    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as user_file:
+        for line in user_file:
+            all_users.append(line.strip())
+
+
 def generate_reports():
-    pass
+    '''This subroutine calls two subroutines since I think each report
+    should be its own function. The additional support subroutines have
+    appropriate detail for the report type generated, user vs. task.'''
+
+    # Extract all info from tasks.txt and user.txt for processing.
+
+
+    # Create two dictionaries to store relevant info.
+    # Populate them in support subroutines.
+    task_stats = generate_task_report()
+    user_stats = generate_user_stats(task_stats)
 
 
 def display_statistics():
+    '''Opens the overview text files (created by generate_reports()) and
+    display the contents in a formatted output for the user. If the text
+    files do not exist, call generate_reports() first.'''
     pass
 
 
