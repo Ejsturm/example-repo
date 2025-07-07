@@ -17,6 +17,7 @@ MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
            "Code_Files/")
 
 # Used for reading in and printing out dates in the desired format.
+# EJS: I relied upon strftime.org for these format options.
 DATE_STR_FORMAT = "%d %b %Y"
 
 # ====== Subroutines ===================================================
@@ -61,22 +62,7 @@ def add_task():
     due_date = input("Provide a due date (DD Mon YYYY): ").strip()
 
     # Get current date information and reformat it apporpiately.
-    # Used geeksforgeeks.org to find the datetime module.
-    curr_year, curr_month_num, curr_day = str(date.today()).split("-")
-    months = {"01": "Jan",
-              "02": "Feb",
-              "03": "Mar",
-              "04": "Apr",
-              "05": "May",
-              "06": "Jun",
-              "07": "Jul",
-              "08": "Aug",
-              "09": "Sep",
-              "10": "Oct",
-              "11": "Nov",
-              "12": "Dec"}
-    current_month = months[curr_month_num]
-    current_date = " ".join([curr_day, current_month, curr_year])
+    current_date = str(date.today().strftime(DATE_STR_FORMAT))
 
     # Format the new task's string.
     full_task_string = ", ".join([task_username, task_name, description,
