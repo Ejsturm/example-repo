@@ -324,7 +324,6 @@ def generate_task_report():
     Returns
     A dictionary with various data about task completion.'''
 
-    task_data = {}  # Will hold all task statistics computed below.
     all_tasks = []  # Holds all tasks.txt data.
 
     total_tasks = 0
@@ -338,7 +337,7 @@ def generate_task_report():
         print('''No tasks exist; unable to generate statistics.
               Please add tasks before generating metadata.
               Returning to main menu.\n''')
-        return task_data
+        return
 
     completed_tasks = 0
     incomplete_tasks = 0
@@ -362,15 +361,16 @@ def generate_task_report():
     percent_incomplete = round(incomplete_tasks/total_tasks * 100, 2)
     percent_overdue = round(overdue_tasks/total_tasks * 100, 2)
 
-    task_data.update({'Total tasks': total_tasks,
-                      'Completed tasks': completed_tasks,
-                      'Incomplete tasks': incomplete_tasks,
-                      'Overdue tasks': overdue_tasks,
-                      'Percent incomplete': percent_incomplete,
-                      'Percent overdue': percent_overdue
-                      })
-
-    return task_data
+    # Write all formatted data to the task_overview.txt file in ./. 
+    # Always overwrites any pre-existing task_overview.txt file with
+    # current task data.
+    with open(MY_PATH+"task_overview.txt", 'w', encoding="utf-8") as out_file:
+        out_file.write(f"{'Total tasks:': <20}{total_tasks}\n")
+        out_file.write(f"{'Completed tasks:': <20}{completed_tasks}\n")
+        out_file.write(f"{'Incomplete tasks:': <20}{incomplete_tasks}\n")
+        out_file.write(f"{'Overdue tasks:': <20}{overdue_tasks}\n\n")
+        out_file.write(f"{'Percent incomplete:': <20}{percent_incomplete}\n")
+        out_file.write(f"{'Percent overdue:': <20}{percent_overdue}")
 
 
 def generate_user_dict():
@@ -382,7 +382,7 @@ def generate_user_dict():
     total_users (int): the number of users in user.txt
     total_tasks (int): the number of tasks in tasks.txt
     all_user_data (dict): a nested dictionary where each key is a user
-        and the value is another dictionary with raw task data.
+                 and the value is another dictionary with raw task data.
     '''
 
     # All user data. A dictionary of dictionaries. Return this.
