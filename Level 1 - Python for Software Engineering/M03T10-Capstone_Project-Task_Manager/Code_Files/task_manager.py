@@ -351,7 +351,7 @@ def generate_task_report():
                 completed_tasks += 1
             else:
                 incomplete_tasks += 1
-                # Compare Unix timestamps of 'now' and due_date to see 
+                # Compare Unix timestamps of 'now' and due_date to see
                 # if a task is overdue.
                 # EJS: A pro software engineer taught me about the
                 # universal unix timestamp concept.
@@ -361,7 +361,7 @@ def generate_task_report():
     percent_incomplete = round(incomplete_tasks/total_tasks * 100, 2)
     percent_overdue = round(overdue_tasks/total_tasks * 100, 2)
 
-    # Write all formatted data to the task_overview.txt file in ./. 
+    # Write all formatted data to the task_overview.txt file in ./.
     # Always overwrites any pre-existing task_overview.txt file with
     # current task data.
     with open(MY_PATH+"task_overview.txt", 'w', encoding="utf-8") as out_file:
@@ -480,18 +480,20 @@ def generate_user_report(total_tasks, user_stats):
 
 
 def generate_reports():
-    '''This subroutine calls two subroutines since I think each report
-    should be its own function. The additional support subroutines have
-    appropriate detail for the report type generated, user vs. task.'''
+    '''For admin use only. This subroutine calls support subroutines to
+    coordinate the creation of the user_overview.txt and
+    task_overview.txt files. New copies of each file are created
+    everytime this option is selected by the admin.
+    See doc strings for support routines for additional detail.'''
 
     # Create the task_overview.txt file by calling a support function.
     task_stats = generate_task_report()
     if task_stats == -1:
         # The displayed error message is in generate_task_report().
-        # Pop back to the main menu from here with no extra messages.
+        # Pop back to the main menu at this point.
         return
 
-    # Create the user_overview.txt file. Requires several steps.
+    # Create the user_overview.txt file.
     # Start by associating users and their assigned tasks.
     total_tasks, raw_user_stats = generate_user_dict()
 
@@ -500,10 +502,41 @@ def generate_reports():
 
 
 def display_statistics():
-    '''Opens the overview text files (created by generate_reports()) and
-    display the contents in a formatted output for the user. If the text
-    files do not exist, call generate_reports() first.'''
-    pass
+    '''For admin use only. Opens the overview text files (created by
+    generate_reports()) and display the contents in a formatted output
+    for the user. If the text files do not exist, call
+    generate_reports() first.'''
+
+    # First check if the overview (ov) files exist.
+    # Due to the design of generate_reports(), if the files exist, they
+    # have contents.
+    user_ov_file_name = MY_PATH+"user_overview.txt"
+    task_ov_file_name = MY_PATH+"task_overview.txt"
+    if (os.path.exists(user_ov_file_name) is False or
+            os.path.exists(task_ov_file_name) is False):
+        generate_reports()
+
+    # Open and display task data in STDOUT.
+    print("**Task Overview Data**")
+    with open(task_ov_file_name, 'r', encoding="utf-8") as task_file:
+        task_contents = task_file.read()
+
+    task_content_list = task_contents.split("\n")
+    for line in task_content_list:
+        print(f"\t{line}")
+    print("-"*79)
+
+    # Open and display user data in STDOUT.
+    print("**User Overview Data**")
+    with open(user_ov_file_name, 'r', encoding="utf-8") as user_file:
+        user_contents = user_file.read()
+
+    user_content_list = user_contents.split("\n")
+    for line in user_content_list:
+        print(f"\t{line}")
+    print("-"*79)
+
+    print("Returning to main menu.\n")
 
 
 # ==== Login Section ===================================================
@@ -606,12 +639,15 @@ while True:
     elif menu == 'ds':
         # ONLY ADMINS MAY DO THIS.
         # Diplay the information stored in the report files.
-        display_statistics()
+        if current_user == "admin":
+            print("Displaying all statistics.\n")
+            display_statistics()
 
     elif menu == 'gr':
         # ONLY ADMINS MAY DO THIS.
         # Allow user to generate two report text files.
         if current_user == "admin":
+            print("Generating user and task overview report files.\n")
             generate_reports()
 
     elif menu == 'e':
