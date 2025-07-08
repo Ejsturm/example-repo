@@ -8,6 +8,7 @@ several subsequent tasks to upgrade the baseline program.
 I will use version control along the way. 2025-06-12 EJS'''
 
 # ===== Importing external modules ===========
+import os
 from datetime import datetime as dt
 from datetime import date
 
@@ -322,41 +323,40 @@ def generate_task_report():
     or computed in this routine.
 
     Returns
-    A dictionary with various data about task completion.'''
+    0 upon successful execution.
+    -1 if the tasks.txt file doesn't exist or is empty.'''
 
-    all_tasks = []  # Holds all tasks.txt data.
-
-    total_tasks = 0
-    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as task_file:
-        for line in task_file:
-            all_tasks.append(line.strip())
-            total_tasks += 1
-
-    # If the tasks.txt file is empty, notify the user.
-    if total_tasks == 0:
-        print('''No tasks exist; unable to generate statistics.
+    # First check to see if the tasks.txt file has any entries.
+    # EJS: I used Google -> labex.io/tutorials to learn this syntax.
+    task_file_name = MY_PATH+"user.txt"
+    if (os.path.exists(task_file_name) is False or
+            os.path.getsize(task_file_name) == 0):
+        print('''No tasks exist; unable to generate overview report.
               Please add tasks before generating metadata.
               Returning to main menu.\n''')
-        return
+        return -1
 
+    total_tasks = 0
     completed_tasks = 0
     incomplete_tasks = 0
     overdue_tasks = 0
-    for t in all_tasks:
-        task_components = t.split(", ")
-        completion = task_components[5].strip()
-        if completion == "Yes":
-            completed_tasks += 1
-        else:
-            incomplete_tasks += 1
-            # Determine the Unix time of the due date.
-            # EJS: A pro software engineer taught me about the universal
-            # unix timestamp concept.
-            due_date_parse = dt.strptime(task_components[4], DATE_STR_FORMAT)
+    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as task_file:
+        for line in task_file:
+            contents = line.split(", ").strip()
+            due_date = dt.strptime(contents[4], DATE_STR_FORMAT)
+            completion = contents[5].strip()
 
-            # Compare the Unix timestamps to see if the task is overdue.
-            if due_date_parse < dt.now():
-                overdue_tasks += 1
+            total_tasks += 1       
+            if completion == "Yes":
+                completed_tasks += 1
+            else:
+                incomplete_tasks += 1
+                # Compare Unix timestamps of 'now' and due_date to see 
+                # if a task is overdue.
+                # EJS: A pro software engineer taught me about the
+                # universal unix timestamp concept.
+                if due_date < dt.now():
+                    overdue_tasks += 1
 
     percent_incomplete = round(incomplete_tasks/total_tasks * 100, 2)
     percent_overdue = round(overdue_tasks/total_tasks * 100, 2)
@@ -371,6 +371,7 @@ def generate_task_report():
         out_file.write(f"{'Overdue tasks:': <20}{overdue_tasks}\n\n")
         out_file.write(f"{'Percent incomplete:': <20}{percent_incomplete}\n")
         out_file.write(f"{'Percent overdue:': <20}{percent_overdue}")
+    return 0
 
 
 def generate_user_dict():
@@ -435,9 +436,9 @@ def generate_reports():
     # Create two dictionaries to store relevant info.
     # Populate them in support subroutines.
     task_stats = generate_task_report()
-    if not task_stats:
-        # If there were no tasks, go back to the main menu.
-        # Error message sent to STDOUT in generate_task_report().
+    if task_stats == -1:
+        # The displayed error message is in generate_task_report().
+        # Pop back to the main menu from here with no extra messages.
         return
 
     total_users, total_tasks, raw_user_stats = generate_user_dict()
