@@ -340,13 +340,13 @@ def generate_task_report():
     completed_tasks = 0
     incomplete_tasks = 0
     overdue_tasks = 0
-    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as task_file:
+    with open(MY_PATH+"tasks.txt", 'r', encoding="utf-8") as task_file:
         for line in task_file:
-            contents = line.split(", ").strip()
+            contents = line.split(", ")
             due_date = dt.strptime(contents[4], DATE_STR_FORMAT)
             completion = contents[5].strip()
 
-            total_tasks += 1       
+            total_tasks += 1
             if completion == "Yes":
                 completed_tasks += 1
             else:
@@ -365,12 +365,14 @@ def generate_task_report():
     # Always overwrites any pre-existing task_overview.txt file with
     # current task data.
     with open(MY_PATH+"task_overview.txt", 'w', encoding="utf-8") as out_file:
-        out_file.write(f"{'Total tasks:': <20}{total_tasks}\n")
-        out_file.write(f"{'Completed tasks:': <20}{completed_tasks}\n")
-        out_file.write(f"{'Incomplete tasks:': <20}{incomplete_tasks}\n")
-        out_file.write(f"{'Overdue tasks:': <20}{overdue_tasks}\n\n")
-        out_file.write(f"{'Percent incomplete:': <20}{percent_incomplete}\n")
-        out_file.write(f"{'Percent overdue:': <20}{percent_overdue}")
+        out_file.write(f"{'Total tasks:': <35}{total_tasks}\n")
+        out_file.write(f"{'Completed tasks:': <35}{completed_tasks}\n")
+        out_file.write(f"{'Incomplete tasks:': <35}{incomplete_tasks}\n")
+        out_file.write(f"{'  Incomplete & overdue tasks:': <35}"
+                       f"{overdue_tasks}\n\n")
+        out_file.write(f"{'Percent incomplete:': <35}{percent_incomplete}\n")
+        out_file.write(f"{'  Percent incomplete & overdue:': <35}"
+                       f"{percent_overdue}")
     return 0
 
 
