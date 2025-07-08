@@ -328,12 +328,12 @@ def generate_task_report():
 
     # First check to see if the tasks.txt file has any entries.
     # EJS: I used Google -> labex.io/tutorials to learn this syntax.
-    task_file_name = MY_PATH+"user.txt"
+    task_file_name = MY_PATH+"tasks.txt"
     if (os.path.exists(task_file_name) is False or
             os.path.getsize(task_file_name) == 0):
-        print('''No tasks exist; unable to generate overview report.
-              Please add tasks before generating metadata.
-              Returning to main menu.\n''')
+        print('''The file tasks.txt either does not exist or is empty.
+        Please add tasks before generating metadata.
+        Returning to main menu.\n''')
         return -1
 
     total_tasks = 0
