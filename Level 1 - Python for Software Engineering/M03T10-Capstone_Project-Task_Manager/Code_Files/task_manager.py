@@ -394,7 +394,7 @@ def generate_user_dict():
     # Get all users and initialize nested dictionary structure.
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as user_file:
         for line in user_file:
-            user = line.split(", ")[0].strip()
+            user = line.split(",")[0].strip()
             all_user_data.update({user: {
                 "total assigned": 0,
                 "complete": 0,
@@ -413,7 +413,7 @@ def generate_user_dict():
             due_date = dt.strptime(contents[4].strip(), DATE_STR_FORMAT)
 
             # Update the user's total number of tasks.
-            all_user_data[assignee]["total assgined"] += 1
+            all_user_data[assignee]["total assigned"] += 1
 
             # Update the user's complete/incomplete task number.
             if completion == "Yes":
@@ -442,9 +442,9 @@ def generate_user_report(total_tasks, user_stats):
 
     # Always create a 'new' output file for most current data.
     with open(MY_PATH+"user_overview.txt", 'w', encoding="utf-8") as f:
-        f.write(f"{'Total users:': <30}{len(user_stats)}\n")
-        f.write(f"{'Total tasks:': <30}{total_tasks}\n\n")
-        f.write("User specific data:\n"+"-"*50)
+        f.write(f"{'Total users:': <35}{len(user_stats)}\n")
+        f.write(f"{'Total tasks:': <35}{total_tasks}\n\n")
+        f.write("User specific data:\n"+"-"*50+"\n")
         # The "outer" dictionary keys are all the usernames.
         # The "inner/nested" dictionaries are that user's task data.
         for user in user_stats:
@@ -455,19 +455,27 @@ def generate_user_report(total_tasks, user_stats):
             num_overdue = user_stats[user]["overdue"]
 
             # Compute necessary percents.
-            percent_assigned = round(num_tasks/total_tasks * 100, 2)
-            percent_complete = round(num_complete/num_tasks * 100, 2)
-            percent_incomplete = round(num_incomplete/num_tasks * 100, 2)
-            percent_overdue = round(num_overdue/num_tasks * 100, 2)
+            if num_tasks == 0:
+                # The user has no tasks. Do not compute stats.
+                percent_assigned = "--"
+                percent_complete = "--"
+                percent_incomplete = "--"
+                percent_overdue = "--"
+            else:
+                percent_assigned = round(num_tasks/total_tasks * 100, 2)
+                percent_complete = round(num_complete/num_tasks * 100, 2)
+                percent_incomplete = round(num_incomplete/num_tasks * 100, 2)
+                percent_overdue = round(num_overdue/num_tasks * 100, 2)
 
             # Write all stats to output file.
             f.write(f"User: {user}\n")
-            f.write(f"{'Total assigned tasks:': <30}{num_tasks}\n")
-            f.write(f"{'Percent of total tasks:': <30}{percent_assigned}\n")
+            f.write(f"{'Total assigned tasks:': <35}{num_tasks}\n")
+            f.write(f"{'Percent of total tasks:': <35}{percent_assigned}\n")
             f.write("User-specific data:\n")
-            f.write(f"{'  Percent complete:': <28}{percent_complete}\n")
-            f.write(f"{'  Percent incomplete': <28}{percent_incomplete}\n")
-            f.write(f"{'  Percent overdue:': <28}{percent_overdue}\n")
+            f.write(f"{'  Percent complete:': <35}{percent_complete}\n")
+            f.write(f"{'  Percent incomplete': <35}{percent_incomplete}\n")
+            f.write(f"{'  Percent incomplete & overdue:': <35}"
+                    f"{percent_overdue}\n")
             f.write("-"*50+"\n")
 
 
