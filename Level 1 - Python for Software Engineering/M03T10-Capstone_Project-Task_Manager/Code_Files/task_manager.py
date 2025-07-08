@@ -318,14 +318,15 @@ def delete_task():
 
 def generate_task_report():
     '''Creates a dictionary of stats about the tasks using the tasks.txt
-    file.
+    file. Everything needed for the task_overview.txt file is obtained
+    or computed in this routine.
 
     Returns
     A dictionary with various data about task completion.'''
 
     task_data = {}  # Will hold all task statistics computed below.
     all_tasks = []  # Holds all tasks.txt data.
-    
+
     total_tasks = 0
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as task_file:
         for line in task_file:
@@ -352,12 +353,10 @@ def generate_task_report():
             # Determine the Unix time of the due date.
             # EJS: A pro software engineer taught me about the universal
             # unix timestamp concept.
-            due_date = task_components[4]
-            due_date_parse = dt.strptime(due_date, DATE_STR_FORMAT)
-            curr_parse = dt.now()  # The current Unix time
+            due_date_parse = dt.strptime(task_components[4], DATE_STR_FORMAT)
 
             # Compare the Unix timestamps to see if the task is overdue.
-            if due_date_parse < curr_parse:
+            if due_date_parse < dt.now():
                 overdue_tasks += 1
 
     percent_incomplete = round(incomplete_tasks/total_tasks * 100, 2)
@@ -374,85 +373,58 @@ def generate_task_report():
     return task_data
 
 
-def generate_user_report():
-    '''foo'''
+def generate_user_dict():
+    '''Collates task data according to the assigned user. Requires the
+    user.txt and tasks.txt files. This is a support method for
+    generate_report().
 
-    # Holds the number of tasks for each user.
-    user_tasks = {}
-    # Holds the number of incomplete tasks for each user.
-    user_incomplete = {}
-    # Holds the number of overdue tasks for each user.
-    user_overdue = {}
+    Returns:
+    total_users (int): the number of users in user.txt
+    total_tasks (int): the number of tasks in tasks.txt
+    all_user_data (dict): a nested dictionary where each key is a user
+        and the value is another dictionary with raw task data.
+    '''
 
     # All user data. A dictionary of dictionaries. Return this.
     all_user_data = {}
 
     total_users = 0
-    # Get all users. Initialize all 3 dictionaries based on username.
+    # Get all users and initialize nested dictionary structure.
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as user_file:
         for line in user_file:
             total_users += 1
             user = line.split(", ")[0].strip()
-            if user not in user_tasks:
-                user_tasks.update({user: 0})
-                user_incomplete.update({user: 0})
-                user_overdue.update({user: 0})
+            all_user_data.update({user: {
+                "total tasks": 0,
+                "complete": 0,
+                "incomplete": 0,
+                "overdue": 0}})
 
     total_tasks = 0
     # Extract task data to get raw numerical data on assigned tasks.
+    # Update nested dictionary values.
     with open(MY_PATH+"tasks.txt", 'r', encoding="utf-8") as task_file:
         for task in task_file:
             total_tasks += 1
             contents = task.split(", ")
             assignee = contents[0]
             completion = contents[5].strip()
-            due_date = contents[4]
-            due_date_parse = dt.strptime(due_date, DATE_STR_FORMAT)
+            due_date = dt.strptime(contents[4].strip(), DATE_STR_FORMAT)
 
-            # The assigned person has a task; update their total.
-            user_tasks[assignee] += 1
+            # Update the user's total number of tasks.
+            all_user_data[assignee]["total tasks"] += 1
 
-            # If the assignee has an incomplete task, update their total
-            if completion == "No":
-                user_incomplete[assignee] += 1
-                curr_parse = dt.now()
-                # Determine if the incomplete task is overdue.
-                if due_date_parse < curr_parse:
-                    user_overdue[assignee] += 1
+            # Update the user's complete/incomplete task number.
+            if completion == "Yes":
+                all_user_data[assignee]["complete"] += 1
+            else:
+                all_user_data[assignee]["incomplete"] += 1
+                # Determine whether an incomplete task is overdue and
+                # update accordingly.
+                if due_date < dt.now():
+                    all_user_data[assignee]["overdue"] += 1
 
-    # Process raw data to compute percentages and store in all_user_data
-    for user in user_tasks:
-        user_total_tasks = user_tasks[user]
-        percent_assigned = round(user_total_tasks/total_tasks * 100, 2)
-        if user_total_tasks != 0:
-            incomplete = user_incomplete[user]
-            complete = user_total_tasks - incomplete
-
-            percent_complete = round(complete/user_total_tasks * 100, 2)
-            percent_incomplete = round(incomplete/user_total_tasks * 100, 2)
-
-            overdue = user_overdue[user]
-            percent_overdue = round(overdue/incomplete * 100, 2)
-        else:
-            # The user has 0 assigned tasks.
-            incomplete, complete = 0, 0
-            percent_complete, percent_incomplete = 0, 0
-            overdue = 0
-            percent_overdue = 0
-
-        # Create a single-user dictionary.
-        user_stats = {"Total tasks": user_total_tasks,
-                      "Total percent": percent_assigned,
-                      "Percent complete": percent_complete,
-                      "Percent incomplete": percent_incomplete,
-                      "Percent overdue": percent_overdue
-                      }
-
-        # Update all-user dictionary by adding a single-user stats
-        # dictionary. The all-user key is the username.
-        all_user_data.update({user: user_stats})
-
-    return all_user_data
+    return total_users, total_tasks, all_user_data
 
 
 def generate_reports():
@@ -467,8 +439,10 @@ def generate_reports():
         # If there were no tasks, go back to the main menu.
         # Error message sent to STDOUT in generate_task_report().
         return
-    
-    user_stats = generate_user_stats()
+
+    total_users, total_tasks, raw_user_stats = generate_user_dict()
+
+    # Compute requisite statistics using raw user data.
 
 
 def display_statistics():
