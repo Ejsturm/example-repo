@@ -380,23 +380,21 @@ def generate_user_dict():
     generate_report().
 
     Returns:
-    total_users (int): the number of users in user.txt
     total_tasks (int): the number of tasks in tasks.txt
     all_user_data (dict): a nested dictionary where each key is a user
-                 and the value is another dictionary with raw task data.
+                and the value is another dictionary with that user's
+                basic task data.
     '''
 
-    # All user data. A dictionary of dictionaries. Return this.
+    # All user data. A dictionary of dictionaries for return.
     all_user_data = {}
 
-    total_users = 0
     # Get all users and initialize nested dictionary structure.
     with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as user_file:
         for line in user_file:
-            total_users += 1
             user = line.split(", ")[0].strip()
             all_user_data.update({user: {
-                "total tasks": 0,
+                "total assigned": 0,
                 "complete": 0,
                 "incomplete": 0,
                 "overdue": 0}})
@@ -413,7 +411,7 @@ def generate_user_dict():
             due_date = dt.strptime(contents[4].strip(), DATE_STR_FORMAT)
 
             # Update the user's total number of tasks.
-            all_user_data[assignee]["total tasks"] += 1
+            all_user_data[assignee]["total assgined"] += 1
 
             # Update the user's complete/incomplete task number.
             if completion == "Yes":
@@ -425,7 +423,50 @@ def generate_user_dict():
                 if due_date < dt.now():
                     all_user_data[assignee]["overdue"] += 1
 
-    return total_users, total_tasks, all_user_data
+    return total_tasks, all_user_data
+
+
+def generate_user_report(total_tasks, user_stats):
+    '''Writes the user_overview.txt file with formatted user-specific
+    percentages. Support routine for generate_reports(). Creates a new
+    user_overview.txt file every time.
+
+    Parameters:
+    total_tasks (int): the total number of tasks in tasks.txt
+
+    user_stats (dict): a dictionary of dictionaries holding all user
+                data. Created by generate_user_dict().
+    '''
+
+    # Always create a 'new' output file for most current data.
+    with open(MY_PATH+"user_overview.txt", 'w', encoding="utf-8") as f:
+        f.write(f"{'Total users:': <30}{len(user_stats)}\n")
+        f.write(f"{'Total tasks:': <30}{total_tasks}\n\n")
+        f.write("User specific data:\n"+"-"*50)
+        # The "outer" dictionary keys are all the usernames.
+        # The "inner/nested" dictionaries are that user's task data.
+        for user in user_stats:
+            # Extract raw numerical data and rename for convenience.
+            num_tasks = user_stats[user]["total assigned"]
+            num_complete = user_stats[user]["complete"]
+            num_incomplete = user_stats[user]["incomplete"]
+            num_overdue = user_stats[user]["overdue"]
+
+            # Compute necessary percents.
+            percent_assigned = round(num_tasks/total_tasks * 100, 2)
+            percent_complete = round(num_complete/num_tasks * 100, 2)
+            percent_incomplete = round(num_incomplete/num_tasks * 100, 2)
+            percent_overdue = round(num_overdue/num_tasks * 100, 2)
+
+            # Write all stats to output file.
+            f.write(f"User: {user}\n")
+            f.write(f"{'Total assigned tasks:': <30}{num_tasks}\n")
+            f.write(f"{'Percent of total tasks:': <30}{percent_assigned}\n")
+            f.write("User-specific data:\n")
+            f.write(f"{'  Percent complete:': <28}{percent_complete}\n")
+            f.write(f"{'  Percent incomplete': <28}{percent_incomplete}\n")
+            f.write(f"{'  Percent overdue:': <28}{percent_overdue}\n")
+            f.write("-"*50+"\n")
 
 
 def generate_reports():
@@ -433,17 +474,19 @@ def generate_reports():
     should be its own function. The additional support subroutines have
     appropriate detail for the report type generated, user vs. task.'''
 
-    # Create two dictionaries to store relevant info.
-    # Populate them in support subroutines.
+    # Create the task_overview.txt file by calling a support function.
     task_stats = generate_task_report()
     if task_stats == -1:
         # The displayed error message is in generate_task_report().
         # Pop back to the main menu from here with no extra messages.
         return
 
-    total_users, total_tasks, raw_user_stats = generate_user_dict()
+    # Create the user_overview.txt file. Requires several steps.
+    # Start by associating users and their assigned tasks.
+    total_tasks, raw_user_stats = generate_user_dict()
 
-    # Compute requisite statistics using raw user data.
+    # Compute requisite statistics and create output file.
+    generate_user_report(total_tasks, raw_user_stats)
 
 
 def display_statistics():
