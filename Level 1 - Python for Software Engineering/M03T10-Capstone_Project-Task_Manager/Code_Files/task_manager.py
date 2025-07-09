@@ -606,6 +606,8 @@ while True:
         if current_user == "admin":
             print("Registering a new user.\n")
             reg_user()
+        else:
+            print("You have entered an invalid input. Please try again")
 
     elif menu == 'a':
         # Add a new task and its requirements to the tasks.txt file.
@@ -628,6 +630,8 @@ while True:
         if current_user == "admin":
             print("Viewing completed tasks.\n")
             view_completed()
+        else:
+            print("You have entered an invalid input. Please try again")
 
     elif menu == 'del':
         # ONLY ADMINS MAY DO THIS.
@@ -635,6 +639,8 @@ while True:
         if current_user == "admin":
             print("Deleting a task.\n")
             delete_task()
+        else:
+            print("You have entered an invalid input. Please try again")
 
     elif menu == 'ds':
         # ONLY ADMINS MAY DO THIS.
@@ -642,6 +648,8 @@ while True:
         if current_user == "admin":
             print("Displaying all statistics.\n")
             display_statistics()
+        else:
+            print("You have entered an invalid input. Please try again")
 
     elif menu == 'gr':
         # ONLY ADMINS MAY DO THIS.
@@ -649,6 +657,8 @@ while True:
         if current_user == "admin":
             print("Generating user and task overview report files.\n")
             generate_reports()
+        else:
+            print("You have entered an invalid input. Please try again")
 
     elif menu == 'e':
         print('Goodbye!!!')
