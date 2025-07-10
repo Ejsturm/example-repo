@@ -1,0 +1,26 @@
+Text based answers for questions 1-4 of this section. 2025-07-09 EJS
+
+Question 1
+Normalization is the process of restructuring tables such that data issues such
+as info redundancy and errors in data input/updates/delations are minimized.
+
+Question 2
+A table is in 1NF when the following conditions are met: 
+  * a cell no longer contains more than one value of the same type
+  * all attributes are dependent on a primary key that may be composite
+  * key attributes are identified--that is, if there are additional
+    dependencies/relations with non-prime attributes, those should be 
+    identified.
+
+Question 3
+A table is in 2NF when the following conditions are met:
+  * it is in 1NF already
+  * there are no partial dependencies (transitive dependencies are still
+    possible at this stage)
+
+Question 4
+A table is in 3NF when the following conditions are met:
+  * it is in 2NF already
+  * there are no transitive dependencies
+
+See the PNG file for questions 5-7.
