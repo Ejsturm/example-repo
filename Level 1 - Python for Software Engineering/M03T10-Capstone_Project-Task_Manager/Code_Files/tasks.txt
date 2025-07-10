@@ -1,2 +1,9 @@
 admin, Register Users with task_manager.py, Use task_manager.py to add the usernames and passwords for all team members that will be using this program., 10 Oct 2019, 20 Oct 2019, No
 admin, Assign initial tasks, Use task_manager.py to assign each team member with appropriate tasks, 10 Oct 2019, 25 Oct 2019, No
+sally, Eat cake, Eat a lot of birthday cake, 02 Jul 2025, 01 Jan 2099, Yes
+admin, Write scripts, Write several programs for later use., 02 Jul 2025, 31 Dec 2025, No
+sally, Sort papers, Organize all of the tax forms, 03 Jul 2025, 15 Nov 2025, Yes
+joe, Clean bathroom, Scrub the toilets and wash the mirror, 03 Jul 2025, 05 Jul 2026, Yes
+admin, do stuff, no, 03 Jul 2025, 01 Jan 1970, No
+admin, Testing timer, not today, 07 Jul 2025, 10 Dec 2030, No
+joe, Eat chips, Make and eat chips, 07 Jul 2025, 15 Jan 2026, No
