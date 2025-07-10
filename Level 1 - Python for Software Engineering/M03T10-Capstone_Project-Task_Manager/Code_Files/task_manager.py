@@ -12,11 +12,6 @@ import os
 from datetime import datetime as dt
 from datetime import date
 
-# Setting up path string to make future code more readable:
-MY_PATH = ("c:/Users/sturm/Documents/ES25040017967/Level 1 - Python for "
-           "Software Engineering/M03T10-Capstone_Project-Task_Manager/"
-           "Code_Files/")
-
 # Used for reading in and printing out dates in the desired format.
 # EJS: I relied upon strftime.org for these format options.
 DATE_STR_FORMAT = "%d %b %Y"
@@ -40,7 +35,7 @@ def reg_user():
             # The passwords match; add new information to both the
             # valid_user dictionary and the user.txt file.
             valid_login_data.update({new_user: new_code_1})
-            with open(MY_PATH+"user.txt", 'a+', encoding="utf-8") as file:
+            with open("user.txt", 'a+', encoding="utf-8") as file:
                 file.write("\n"+new_user+","+new_code_1)
         else:
             # The passwords do not match. Return to main menu.
@@ -60,7 +55,16 @@ def add_task():
     # Get other task data.
     task_name = input("Task title: ").strip()
     description = input("Provide a brief description: ").strip()
-    due_date = input("Provide a due date (DD Mon YYYY): ").strip()
+
+    # Get due date; ensure the format is correct.
+    # EJS: I found this trick through Google -> geeksforgeeks.org.
+    incorrect_date_form = False
+    while not incorrect_date_form:
+        try:
+            due_date = input("Provide a due date (DD Mon YYYY): ").strip()
+            incorrect_date_form = bool(dt.strptime(due_date, DATE_STR_FORMAT))
+        except ValueError:
+            print("Incorrect date format given; please try again.")
 
     # Get current date information and reformat it apporpiately.
     current_date = str(date.today().strftime(DATE_STR_FORMAT))
@@ -70,7 +74,7 @@ def add_task():
                                  current_date, due_date, "No"])
 
     # Add the new task string to the task file.
-    with open(MY_PATH+"tasks.txt", 'a+', encoding="utf-8") as file:
+    with open("tasks.txt", 'a+', encoding="utf-8") as file:
         file.write("\n"+full_task_string)
 
 
@@ -98,7 +102,7 @@ def view_all():
     total_tasks = 0
 
     print("-"*80)
-    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+    with open("tasks.txt", "r", encoding="utf-8") as file:
         for line in file:
             print_task(line)
             total_tasks += 1
@@ -118,7 +122,7 @@ def view_mine(user):
     user_tasks = 0  # Tasks assigned to current user.
     all_tasks = []  # A list to store all task information
 
-    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+    with open("tasks.txt", "r", encoding="utf-8") as file:
         for line in file:
             all_tasks.append(line.strip())
 
@@ -228,7 +232,16 @@ def update_task(tasks, target):
             new_name = input("Who should be assinged to this task: ").strip()
             temp_task[0] = new_name
         elif option == 'd':
-            new_date = input("New due date (DD Mon YYYY): ").strip()
+            # Use the same trick with date formatting error handling
+            # as seen in 'add_task().'
+            incorrect_date_form = False
+            while not incorrect_date_form:
+                try:
+                    new_date = input("New due date (DD Mon YYYY): ").strip()
+                    incorrect_date_form = bool(dt.strptime(
+                        new_date, DATE_STR_FORMAT))
+                except ValueError:
+                    print("Incorrect date format given; please try again.")
             temp_task[4] = new_date
         elif option == 'e':
             print("Exiting task editing menu.")
@@ -242,7 +255,7 @@ def update_task(tasks, target):
     tasks[target] = temp_task
 
     # Save updates to task.txt.
-    with open(MY_PATH+"tasks.txt", "w", encoding="utf-8") as new_file:
+    with open("tasks.txt", "w", encoding="utf-8") as new_file:
         for j, t in enumerate(tasks):
             if j == len(tasks)-1:
                 new_file.write(t)
@@ -256,7 +269,7 @@ def view_completed():
 
     completed_tasks = 0
     print("-"*80)
-    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+    with open("tasks.txt", "r", encoding="utf-8") as file:
         for line in file:
             contents = line.split(", ")
             if contents[5].strip() == "Yes":
@@ -272,7 +285,7 @@ def delete_task():
     # A list to store all task information.
     all_tasks = []
 
-    with open(MY_PATH+"tasks.txt", "r", encoding="utf-8") as file:
+    with open("tasks.txt", "r", encoding="utf-8") as file:
         for line in file:
             all_tasks.append(line.strip())
 
@@ -304,7 +317,7 @@ def delete_task():
         # Remove the target task and save the modified task list to
         # tasks.txt. WILL OVERWRITE tasks.txt.
         all_tasks.pop(target_task-1)
-        with open(MY_PATH+"tasks.txt", "w", encoding="utf-8") as new_file:
+        with open("tasks.txt", "w", encoding="utf-8") as new_file:
             for j, t in enumerate(all_tasks):
                 if j == len(all_tasks)-1:
                     new_file.write(t)
@@ -328,7 +341,7 @@ def generate_task_report():
 
     # First check to see if the tasks.txt file has any entries.
     # EJS: I used Google -> labex.io/tutorials to learn this syntax.
-    task_file_name = MY_PATH+"tasks.txt"
+    task_file_name = "tasks.txt"
     if (os.path.exists(task_file_name) is False or
             os.path.getsize(task_file_name) == 0):
         print('''The file tasks.txt either does not exist or is empty.
@@ -340,7 +353,7 @@ def generate_task_report():
     completed_tasks = 0
     incomplete_tasks = 0
     overdue_tasks = 0
-    with open(MY_PATH+"tasks.txt", 'r', encoding="utf-8") as task_file:
+    with open("tasks.txt", 'r', encoding="utf-8") as task_file:
         for line in task_file:
             contents = line.split(", ")
             due_date = dt.strptime(contents[4], DATE_STR_FORMAT)
@@ -364,7 +377,7 @@ def generate_task_report():
     # Write all formatted data to the task_overview.txt file in ./.
     # Always overwrites any pre-existing task_overview.txt file with
     # current task data.
-    with open(MY_PATH+"task_overview.txt", 'w', encoding="utf-8") as out_file:
+    with open("task_overview.txt", 'w', encoding="utf-8") as out_file:
         out_file.write(f"{'Total tasks:': <35}{total_tasks}\n")
         out_file.write(f"{'Completed tasks:': <35}{completed_tasks}\n")
         out_file.write(f"{'Incomplete tasks:': <35}{incomplete_tasks}\n")
@@ -392,7 +405,7 @@ def generate_user_dict():
     all_user_data = {}
 
     # Get all users and initialize nested dictionary structure.
-    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as user_file:
+    with open("user.txt", 'r', encoding="utf-8") as user_file:
         for line in user_file:
             user = line.split(",")[0].strip()
             all_user_data.update({user: {
@@ -404,7 +417,7 @@ def generate_user_dict():
     total_tasks = 0
     # Extract task data to get raw numerical data on assigned tasks.
     # Update nested dictionary values.
-    with open(MY_PATH+"tasks.txt", 'r', encoding="utf-8") as task_file:
+    with open("tasks.txt", 'r', encoding="utf-8") as task_file:
         for task in task_file:
             total_tasks += 1
             contents = task.split(", ")
@@ -441,7 +454,7 @@ def generate_user_report(total_tasks, user_stats):
     '''
 
     # Always create a 'new' output file for most current data.
-    with open(MY_PATH+"user_overview.txt", 'w', encoding="utf-8") as f:
+    with open("user_overview.txt", 'w', encoding="utf-8") as f:
         f.write(f"{'Total users:': <35}{len(user_stats)}\n")
         f.write(f"{'Total tasks:': <35}{total_tasks}\n\n")
         f.write("User specific data:\n"+"-"*50+"\n")
@@ -510,8 +523,8 @@ def display_statistics():
     # First check if the overview (ov) files exist.
     # Due to the design of generate_reports(), if the files exist, they
     # have contents.
-    user_ov_file_name = MY_PATH+"user_overview.txt"
-    task_ov_file_name = MY_PATH+"task_overview.txt"
+    user_ov_file_name = "user_overview.txt"
+    task_ov_file_name = "task_overview.txt"
     if (os.path.exists(user_ov_file_name) is False or
             os.path.exists(task_ov_file_name) is False):
         generate_reports()
@@ -545,7 +558,7 @@ def display_statistics():
 
 valid_login_data = {}
 try:
-    with open(MY_PATH+"user.txt", 'r', encoding="utf-8") as my_file:
+    with open("user.txt", 'r', encoding="utf-8") as my_file:
         for my_line in my_file:
             list_user, list_pw = my_line.split(",")
             list_user = list_user.strip()
